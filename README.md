@@ -15,6 +15,8 @@ npm run preview  # 预览构建产物
 
 技术栈：Vite · React 19 · TypeScript · three.js r186 · @react-three/fiber v9 · drei · @react-three/postprocessing · leva。
 
+> 从零复刻本项目的一次性完整提示词：[PROMPT.md](./PROMPT.md)
+
 ## 交互
 
 - **拖动画面**：旋转 / 缩放镜头（限制俯仰角，保持产品视角）。
