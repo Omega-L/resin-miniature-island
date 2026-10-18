@@ -1,0 +1,13 @@
+import { chromium } from 'playwright-core'
+const browser = await chromium.launch({ channel: 'chrome', headless: true, args: ['--use-angle=default', '--enable-unsafe-swiftshader'] })
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 })
+await page.goto('http://localhost:5173/', { waitUntil: 'load', timeout: 90000 })
+await page.waitForTimeout(9000)
+await page.mouse.move(1300, 700)
+await page.waitForTimeout(700)
+await page.screenshot({ path: 'shots/jelly-right.png' })
+await page.mouse.move(150, 200)
+await page.waitForTimeout(700)
+await page.screenshot({ path: 'shots/jelly-left.png' })
+await browser.close()
+console.log('done')
