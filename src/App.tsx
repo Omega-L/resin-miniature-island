@@ -4,7 +4,7 @@ import { useProgress } from '@react-three/drei'
 import { LevaPanel, folder, useControls, useCreateStore } from 'leva'
 import * as THREE from 'three'
 import { Scene } from './components/Scene'
-import { detectQuality, resolveQuality, type SceneSettings } from './lib/quality'
+import { detectQuality, resolveQuality, type QualityMode, type SceneSettings } from './lib/quality'
 import './styles.css'
 
 const GL_SETTINGS = {
@@ -73,6 +73,7 @@ export default function App() {
         options: {
           '轻量 60 帧': 'lite',
           '完整玻璃 30 帧': 'full',
+          '极致画质': 'ultra',
         },
         label: '渲染模式',
       },
@@ -81,7 +82,7 @@ export default function App() {
   )
 
   const quality = useMemo(
-    () => resolveQuality(baseQuality, qualityMode === 'full' ? 'full' : 'lite'),
+    () => resolveQuality(baseQuality, qualityMode as QualityMode),
     [baseQuality, qualityMode],
   )
 

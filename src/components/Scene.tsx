@@ -76,6 +76,7 @@ export function Scene({ settings, quality }: SceneProps) {
           segments={quality.waterSegments}
           sunDir={sunDir}
           mobile={!quality.reflection}
+          reflectionResolution={quality.reflectionResolution}
         />
         <ResinBlock
           samples={quality.shellSamples}

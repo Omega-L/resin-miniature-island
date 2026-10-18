@@ -3,6 +3,7 @@ import {
   EffectComposer,
   FXAA,
   DepthOfField,
+  Noise,
   ToneMapping,
   Vignette,
 } from '@react-three/postprocessing'
@@ -45,6 +46,7 @@ export function Post({ settings, quality }: PostProps) {
       )}
       <ToneMapping mode={ToneMappingMode.NEUTRAL} />
       <Vignette offset={0.36} darkness={0.28} eskil={false} />
+      {quality.grain && <Noise opacity={0.022} />}
       <FXAA />
     </EffectComposer>
   )

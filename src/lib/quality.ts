@@ -30,7 +30,9 @@ export interface QualityTier {
   vegetation: number
   marine: { coral: number; seaweed: number; fish: number; starfish: number; shells: number }
   reflection: boolean
+  reflectionResolution: number
   bloom: boolean
+  grain: boolean
   depthOfField: boolean
 }
 
@@ -53,9 +55,9 @@ function isLowPowerGPU(): boolean {
   }
 }
 
-export type QualityMode = 'lite' | 'full'
+export type QualityMode = 'lite' | 'full' | 'ultra'
 
-/** Runtime override: lite = 60fps, full = original transmission / reflection / bloom / DOF. */
+/** Runtime override: lite = 60fps, full = full glass, ultra = everything at max. */
 export function resolveQuality(base: QualityTier, mode: QualityMode): QualityTier {
   if (base.mobile) return base
   if (mode === 'lite') {
@@ -72,8 +74,30 @@ export function resolveQuality(base: QualityTier, mode: QualityMode): QualityTie
       vegetation: 700,
       marine: { coral: 22, seaweed: 50, fish: 10, starfish: 8, shells: 12 },
       reflection: false,
+      reflectionResolution: 0,
       bloom: false,
+      grain: false,
       depthOfField: false,
+    }
+  }
+  if (mode === 'ultra') {
+    return {
+      ...base,
+      low: false,
+      dpr: Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5),
+      terrainSegments: 256,
+      heightMapSize: 512,
+      waterSegments: 224,
+      simResolution: 256,
+      shellSamples: 6,
+      shellResolution: 512,
+      vegetation: 2200,
+      marine: { coral: 80, seaweed: 180, fish: 28, starfish: 24, shells: 40 },
+      reflection: true,
+      reflectionResolution: 768,
+      bloom: true,
+      grain: true,
+      depthOfField: true,
     }
   }
   if (base.low) {
@@ -90,11 +114,20 @@ export function resolveQuality(base: QualityTier, mode: QualityMode): QualityTie
       vegetation: 1000,
       marine: { coral: 24, seaweed: 50, fish: 10, starfish: 8, shells: 12 },
       reflection: false,
+      reflectionResolution: 0,
       bloom: false,
+      grain: false,
       depthOfField: false,
     }
   }
-  return base
+  return {
+    ...base,
+    reflection: true,
+    reflectionResolution: 512,
+    bloom: true,
+    grain: false,
+    depthOfField: true,
+  }
 }
 
 export function detectQuality(): QualityTier {
@@ -117,7 +150,9 @@ export function detectQuality(): QualityTier {
       vegetation: 180,
       marine: { coral: 14, seaweed: 32, fish: 8, starfish: 6, shells: 10 },
       reflection: false,
+      reflectionResolution: 0,
       bloom: false,
+      grain: false,
       depthOfField: false,
     }
   }
@@ -127,8 +162,6 @@ export function detectQuality(): QualityTier {
   return {
     mobile: false,
     low,
-    // A 128 MB integrated GPU at a 4K canvas cannot afford DPR 1.5 + HalfFloat
-    // post targets; render at CSS resolution and use an LDR chain there.
     dpr: low ? 0.75 : Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5),
     terrainSegments: low ? 128 : 192,
     heightMapSize: low ? 256 : 512,
@@ -141,7 +174,9 @@ export function detectQuality(): QualityTier {
       ? { coral: 22, seaweed: 50, fish: 10, starfish: 8, shells: 12 }
       : { coral: 62, seaweed: 145, fish: 22, starfish: 18, shells: 32 },
     reflection: !low,
+    reflectionResolution: low ? 0 : 512,
     bloom: !low,
+    grain: false,
     depthOfField: !low,
   }
 }

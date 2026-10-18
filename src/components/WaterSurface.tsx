@@ -21,6 +21,7 @@ interface WaterProps {
   segments: number
   sunDir: THREE.Vector3
   mobile: boolean
+  reflectionResolution: number
 }
 
 interface ReflectionRig {
@@ -35,6 +36,7 @@ export function WaterSurface({
   segments,
   sunDir,
   mobile,
+  reflectionResolution,
 }: WaterProps) {
   const jellyOffset = useJellyOffset()
   const sim = useWaterHeightField(simResolution)
@@ -42,7 +44,8 @@ export function WaterSurface({
 
   const reflection = useMemo<ReflectionRig | null>(() => {
     if (mobile) return null
-    const target = new THREE.WebGLRenderTarget(512, 512, {
+    if (reflectionResolution <= 0) return null
+    const target = new THREE.WebGLRenderTarget(reflectionResolution, reflectionResolution, {
       type: THREE.HalfFloatType,
       minFilter: THREE.LinearFilter,
       magFilter: THREE.LinearFilter,
@@ -52,7 +55,7 @@ export function WaterSurface({
     const camera = new THREE.PerspectiveCamera()
     camera.layers.set(0)
     return { target, camera }
-  }, [mobile])
+  }, [mobile, reflectionResolution])
 
   const fallback = useMemo(() => {
     const data = new Uint8Array([0, 0, 0, 255])
